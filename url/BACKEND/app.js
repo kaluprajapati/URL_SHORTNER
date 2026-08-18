@@ -16,22 +16,23 @@ const app = express();
 
 const allowedOrigins = [
     "http://localhost:5173",
-    "http://localhost:5174",
-    "https://YOUR-FRONTEND.vercel.app"
+    "http://localhost:5174"
 ];
 
-app.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error("Not allowed by CORS"));
-        }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"]
+    })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -51,11 +52,13 @@ const PORT = process.env.PORT || 3000;
 
 connectDB()
     .then(() => {
+        console.log("MongoDB connected successfully");
+
         app.listen(PORT, "0.0.0.0", () => {
             console.log(`Server is running on port ${PORT}`);
         });
     })
     .catch((error) => {
-        console.error("MongoDB connection failed:", error);
+        console.error("MongoDB connection failed:", error.message);
         process.exit(1);
     });
